@@ -1,57 +1,51 @@
-﻿# turbanOS
+# TurbanOS
 
-A minimal 32-bit x86 operating system with keyboard input, VGA text output, and a simple interactive terminal.
+32-bit x86 kernel.
 
-<div align="center">
-  <img src="scrn/fetch.png" alt="turbanOS fetch command" width="600">
-  <p><em>fetch command</em></p>
-</div>
+## Требования
 
-<div align="center">
-  <img src="scrn/datetime.png" alt="turbanOS date and time" width="600">
-  <p><em>show date and time</em></p>
-</div>
-
-<div align="center">
-  <img src="scrn/help.png" alt="turbanOS help command" width="600">
-  <p><em>list of commands</em></p>
-</div>
-
-## Features
-
-- **Bootloader compliant**: Uses Multiboot standard for compatibility with GRUB and other bootloaders
-- **Hardware interaction**: PS/2 keyboard driver with interrupt handling
-- **Text output**: VGA 80x25 text mode with scrolling and cursor support
-- **Terminal interface**: Interactive command-line with basic commands
-- **Memory management**: Stack allocation and interrupt descriptor table setup
-- **PIC remapping**: Properly configures the Programmable Interrupt Controller
-
-## Commands
-
-- `help` - Display available commands
-- `clear` - Clear the terminal screen
-- `fetch` - Simple echo test
-- `reboot` - Display system information
-
-## Project Structure
-
-- `boot.asm` - Assembly boot code and interrupt setup
-- `kernel.c` - Main kernel with terminal, keyboard, and VGA drivers
-- `link.ld` - Linker script for kernel memory layout
-
-## Building
-
-Requires NASM, GCC, QEMU VM and a cross-compiler toolchain for i386. The kernel is loaded at 1MB and follows standard Multiboot conventions.
-I recommend that you use microsoft WSL for compilation.
-For WSL:
-
-```bash
-nasm -f elf32 boot.asm -o boot.o && gcc -m32 -ffreestanding -nostdlib -fno-stack-protector -c kernel.c -o kernel.o && ld -m elf_i386 -T link.ld -o kernel.bin boot.o kernel.o && qemu-system-i386 -kernel kernel.bin
+```
+gcc-i686-linux-gnu
+binutils-i686-linux-gnu
+qemu-system-x86
 ```
 
-## Purpose
+## Сборка
 
-Educational project demonstrating basic operating system concepts: boot process, hardware interaction, keyboard driver, and user interface implementation.
+```
+make
+```
 
+## Запуск
 
+```
+qemu-system-i386 -kernel kernel.bin
+```
 
+## Устройство
+
+Ядро инициализирует VGA, память, файловую систему, клавиатуру, RTC. Запускает shell.
+
+### Файловая система
+
+In-memory, 64 файла/директории, до 4096 байт на файл, вложенность до 4 уровней.
+
+### Драйверы
+
+VGA (текстовый режим 80x25), PS/2 клавиатура, RTC.
+
+### Shell
+
+Команды: help, ls, cd, pwd, cat, touch, mkdir, rm, echo, time, date, clear, reboot, mem.
+
+## Структура
+
+```
+src/
+├── kernel/      # ядро, прерывания
+├── drivers/    # vga, keyboard, rtc
+├── memory/     # kmalloc, kfree
+├── fs/         # файловая система
+├── shell/      # командная оболочка
+└── lib/        # string, printf
+```
