@@ -42,7 +42,7 @@ VGA (текстовый режим 80x25), PS/2 клавиатура, RTC.
 
 ```
 src/
-├── kernel/      # ядро, прерывания
+├── kernel/     # ядро, прерывания
 ├── drivers/    # vga, keyboard, rtc
 ├── memory/     # kmalloc, kfree
 ├── fs/         # файловая система
